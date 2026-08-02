@@ -20,11 +20,11 @@ class NSEClient:
             if not isinstance(announcements, list):
                 return []
                 
-            # Limit to the last 25 announcements
-            latest_25 = announcements[:25]
+            # Limit to the last 30 announcements
+            latest_30 = announcements[:30]
             
-            logger.info(f"Fetched {len(latest_25)} latest announcements.")
-            return latest_25
+            logger.info(f"Fetched {len(latest_30)} latest announcements.")
+            return latest_30
         except Exception as e:
             logger.error(f"Error fetching announcements from NSE: {e}")
             return []
