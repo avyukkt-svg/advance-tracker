@@ -142,8 +142,11 @@ def main():
         logger.info(f"AUDIT_LOG: {json.dumps(audit_log)}")
 
         # Cleanup
-        if os.path.exists(pdf_path):
-            os.remove(pdf_path)
+        try:
+            if pdf_path and os.path.exists(pdf_path):
+                os.remove(pdf_path)
+        except OSError as e:
+            logger.warning(f"Failed to remove PDF {pdf_path}: {e}")
 
     # 10. Send Email
     if high_catalyst_announcements:
