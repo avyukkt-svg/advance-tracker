@@ -14,9 +14,64 @@ class NSEClient:
 
     def get_latest_announcements(self) -> list:
         try:
-            # Returns a list of dicts with announcement details
-            announcements = self.nse.announcements()
-            return announcements if isinstance(announcements, list) else []
+            import datetime
+            import pytz
+            
+            ist = pytz.timezone('Asia/Kolkata')
+            now = datetime.datetime.now(ist)
+            
+            # Default to today
+            from_date = now
+            to_date = now
+            
+            # Intelligent Weekend Logic
+            weekday = now.weekday() # 0 = Monday, ..., 4 = Friday, 5 = Saturday, 6 = Sunday
+            is_weekend_window = False
+            
+            if weekday == 5: # Saturday
+                from_date = now - datetime.timedelta(days=1)
+                is_weekend_window = True
+            elif weekday == 6: # Sunday
+                from_date = now - datetime.timedelta(days=2)
+                is_weekend_window = True
+            elif weekday == 0 and now.hour < 9: # Monday before market open
+                from_date = now - datetime.timedelta(days=3)
+                is_weekend_window = True
+                
+            # Note: We must make them naive datetimes for the NSE API
+            from_date_naive = from_date.replace(tzinfo=None)
+            to_date_naive = to_date.replace(tzinfo=None)
+
+            announcements = self.nse.announcements(from_date=from_date_naive, to_date=to_date_naive)
+            valid_announcements = []
+            
+            if not isinstance(announcements, list):
+                return []
+                
+            for ann in announcements:
+                try:
+                    # Example format: '02-Aug-2026 09:04:27'
+                    an_dt_str = ann.get('an_dt', '')
+                    an_dt = datetime.datetime.strptime(an_dt_str, '%d-%b-%Y %H:%M:%S')
+                    an_dt = ist.localize(an_dt)
+                    
+                    if is_weekend_window:
+                        # Find the Friday 15:30 boundary for this window
+                        days_since_friday = (weekday - 4) % 7
+                        friday_date = now - datetime.timedelta(days=days_since_friday)
+                        friday_boundary = friday_date.replace(hour=15, minute=30, second=0, microsecond=0)
+                        
+                        # Discard anything published before Friday 15:30
+                        if an_dt < friday_boundary:
+                            continue
+                            
+                    valid_announcements.append(ann)
+                except Exception as ex:
+                    logger.warning(f"Error parsing date {ann.get('an_dt')}: {ex}")
+                    valid_announcements.append(ann) # Fallback include
+                    
+            logger.info(f"Fetched {len(valid_announcements)} valid announcements for window starting {from_date.strftime('%Y-%m-%d')}")
+            return valid_announcements
         except Exception as e:
             logger.error(f"Error fetching announcements from NSE: {e}")
             return []
