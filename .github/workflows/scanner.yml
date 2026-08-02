@@ -2,8 +2,8 @@ name: NSE Catalyst Scanner
 
 on:
   workflow_dispatch: # This allows you to manually trigger it from the Actions tab
-  # schedule:
-  #   - cron: '0 * * * *' # Uncomment this if you want GitHub to run it automatically every hour
+  schedule:
+    - cron: '0 * * * *' # Uncomment this if you want GitHub to run it automatically every hour
 
 jobs:
   scan:
