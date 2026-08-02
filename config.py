@@ -15,6 +15,6 @@ class Config:
     EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER") or ""
     
     _thresh = os.getenv("CATALYST_SCORE_THRESHOLD")
-    CATALYST_SCORE_THRESHOLD = int(_thresh) if _thresh else 75
+    CATALYST_SCORE_THRESHOLD = int(_thresh) if _thresh else 50
     
     DB_PATH = "scanner.db"
