@@ -1,6 +1,6 @@
 import re
 import nltk
-from typing import List
+from typing import List, Tuple
 from models import DetectedEvent
 from utils import get_logger
 
