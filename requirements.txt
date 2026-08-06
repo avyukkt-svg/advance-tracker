@@ -1,9 +1,9 @@
 nse
-google-generativeai
 pymupdf
 python-dotenv
 requests
-sumy==0.11.0
-nltk==3.9.1
+openai
+tenacity
+pydantic
 numpy==1.26.4
 yfinance==0.2.40

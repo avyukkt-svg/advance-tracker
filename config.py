@@ -17,4 +17,7 @@ class Config:
     _thresh = os.getenv("CATALYST_SCORE_THRESHOLD")
     CATALYST_SCORE_THRESHOLD = int(_thresh) if _thresh else 50
     
+    GITHUB_TOKEN = os.getenv("GITHUB_TOKEN") or ""
+    NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY") or ""
+    
     DB_PATH = "scanner.db"
